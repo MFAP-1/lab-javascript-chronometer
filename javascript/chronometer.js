@@ -7,11 +7,11 @@ class Chronometer {
   }
 
   start(callback) {
-    if (!callback) {
+    if (!callback && typeof callback !== "function") { // checking if doesn´t exist callback
       this.intervalId = setInterval(() => {
         this.currentTime++;
       }, 1000);
-    } else {
+    } else { // case where there is a callback
       this.intervalId = setInterval(callback, 1000);
     }
   }

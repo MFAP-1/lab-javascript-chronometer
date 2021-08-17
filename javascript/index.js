@@ -1,3 +1,6 @@
+// WEEK 1 - DAY 2: LAB | JS IronChronometer [MFAP-1]
+
+// Instantiating a new Chronometer object:
 const chronometer = new Chronometer();
 
 // get the buttons:
@@ -13,17 +16,25 @@ const milDecElement = document.getElementById('milDec');
 const milUniElement = document.getElementById('milUni');
 const splitsElement = document.getElementById('splits');
 
+// getting the ordered list. Will serve us to 
+const olElement = document.getElementById('splits');
+
 function printTime() {
-  // ... your code goes here
+  chronometer.intervalId = setInterval(() => {
+    printSeconds();
+    printMinutes();
+  });
 }
 
 function printMinutes() {
-  // ... your code goes here
+  minUniElement.innerHTML = String(chronometer.getMinutes() % 10);
+  minDecElement.innerHTML = String(parseInt((chronometer.getMinutes() / 10)));
 }
 
 function printSeconds() {
-  // ... your code goes here
-}
+  secUniElement.innerText = String(chronometer.getSeconds() % 10);
+  secDecElement.innerText = String(parseInt((chronometer.getSeconds() / 10)));
+} 
 
 // ==> BONUS
 function printMilliseconds() {
@@ -31,35 +42,68 @@ function printMilliseconds() {
 }
 
 function printSplit() {
-  // ... your code goes here
+  const newLi = document.createElement("li"); // Creating the new li
+  newLi.innerText = chronometer.split();  // Inputing the text information required
+  olElement.appendChild(newLi); // Adding the newly li created to the html
 }
 
 function clearSplits() {
-  // ... your code goes here
-}
+    while (olElement.firstChild) { // loop until there is no first child
+      olElement.removeChild(olElement.firstChild); // removing one by one
+    }
+  }
 
 function setStopBtn() {
-  // ... your code goes here
+  btnLeftElement.classList.toggle("stop");
+  btnLeftElement.innerText = 'STOP';
+  btnLeftElement.classList.remove("start");
 }
 
 function setSplitBtn() {
-  // ... your code goes here
+  btnRightElement.classList.toggle("split");
+  btnRightElement.innerText = 'SPLIT';
+  btnRightElement.classList.remove("reset");
 }
 
 function setStartBtn() {
-  // ... your code goes here
+  btnLeftElement.classList.toggle("start");
+  btnLeftElement.innerText = 'START';
+  btnLeftElement.classList.remove("stop");
 }
 
 function setResetBtn() {
-  // ... your code goes here
+  btnRightElement.classList.toggle("reset");
+  btnRightElement.innerText = 'RESET';
+  btnRightElement.classList.remove("split"); 
 }
 
-// Start/Stop Button
+
+// Start/Stop Button - EVENTS LISTENERS
 btnLeftElement.addEventListener('click', () => {
-  // ... your code goes here
+  // Case where left button is clicked while the chronometer is stopped
+  if (btnLeftElement.classList.contains('start')) { 
+    setStopBtn(); // setting the left button from START to STOP
+    setSplitBtn(); // setting the right button from RESET to SPLIT
+    chronometer.start(printTime()); // Starting the chronometer and printing the values on the screen thru a callback
+    
+  // Case where left button is clicked while the chronometer is running
+  } else if (btnLeftElement.classList.contains('stop')) { 
+    setStartBtn(); // setting the left button from STOP to START
+    setResetBtn(); // setting the right button from SPLIT TO RESET
+    chronometer.stop(); // Stopping the chronometer
+  }
 });
 
-// Reset/Split Button
+
+// Reset/Split Button - EVENTS LISTENERS
 btnRightElement.addEventListener('click', () => {
-  // ... your code goes here
+  // Case where right button is clicked while the chronometer is running (to split)
+  if (btnRightElement.classList.contains('split')) { 
+    printSplit();
+
+  // Case where right button is clicked while the chronometer is stopped (to reset)
+  } else if (btnRightElement.classList.contains('reset')) { 
+    chronometer.reset(); // Reseting the chronometer
+    clearSplits();     // Reseting the split list
+  }
 });
