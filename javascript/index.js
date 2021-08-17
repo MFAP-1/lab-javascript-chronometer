@@ -19,8 +19,14 @@ const splitsElement = document.getElementById('splits');
 // getting the ordered list. Will serve us to 
 const olElement = document.getElementById('splits');
 
+// BONUS => new variable. To help counting the miliseconds
+let currentMili = 0;
+let miliIntervalId = null;
+
 function printTime() {
-  chronometer.intervalId = setInterval(() => {
+  miliIntervalId = setInterval(() => {
+    currentMili++; // <= BONUS
+    printMilliseconds();
     printSeconds();
     printMinutes();
   });
@@ -38,12 +44,15 @@ function printSeconds() {
 
 // ==> BONUS
 function printMilliseconds() {
-  // ... your code goes here
+  milUniElement.innerText = String(parseInt((currentMili % 1000) % 10));
+  milDecElement.innerText = String(parseInt((currentMili % 100) / 10));
 }
 
 function printSplit() {
   const newLi = document.createElement("li"); // Creating the new li
-  newLi.innerText = chronometer.split();  // Inputing the text information required
+  // Inputing the text information required (including miliseconds)
+  newLi.innerText = chronometer.split() +
+  `:` + milDecElement.innerText + milUniElement.innerText;  // <= BONUS
   olElement.appendChild(newLi); // Adding the newly li created to the html
 }
 
@@ -91,6 +100,7 @@ btnLeftElement.addEventListener('click', () => {
     setStartBtn(); // setting the left button from STOP to START
     setResetBtn(); // setting the right button from SPLIT TO RESET
     chronometer.stop(); // Stopping the chronometer
+    clearInterval(miliIntervalId); // BONUS => stopping the milisecond count
   }
 });
 
@@ -105,5 +115,10 @@ btnRightElement.addEventListener('click', () => {
   } else if (btnRightElement.classList.contains('reset')) { 
     chronometer.reset(); // Reseting the chronometer
     clearSplits();     // Reseting the split list
+    currentMili = 0; // <= BONUS: reseting the milisecond count
+    // BONUS: cleaning the screen (printing all 00:00:00)
+    printMilliseconds(); 
+    printSeconds();
+    printMinutes();
   }
 });
